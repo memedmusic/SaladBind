@@ -1,7 +1,7 @@
 const ora = require('ora'); // ara ara
 const chalk = require('chalk');
 const fs = require('fs');
-const packageJson = JSON.parse(fs.createReadStream("./package.json"))
+const packageJson = fs.createReadStream("./package.json")
 const inquirer = require('inquirer');
 const fetch = require("node-fetch");
 const open = require("open");
