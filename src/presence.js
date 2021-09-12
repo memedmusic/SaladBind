@@ -3,7 +3,7 @@ client = new RPC.Client({ transport: 'ipc' })
 const fs = require("fs");
 var presenceEnabled = false;
 let tempest = "./data/config.json";
-const pjson = fs.createReadSync('./package.json');
+const pjson = fs.createReadStream('./package.json');
 
 if (!fs.existsSync(tempest)) {
 	config = { presenceEnabled: false }
