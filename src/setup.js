@@ -23,7 +23,7 @@ function run(clear) {
 				continueSetup()
 
 			} else {
-				require("./index").menu();
+				requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/index.js").menu();
 			}
 		});
 	} else {
@@ -108,7 +108,7 @@ async function continueSetup(clear) {
 		console.log(chalk.bold.greenBright(`Congratulations!! :D`))
 		console.log(`You're done - you can now start using SaladBind!\nStarting in 5 seconds...`)
 		setTimeout(() => {
-			require("./index").menu();
+			requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/index.js").menu();
 		}, 5000);
 	} else if (promptResult.useapi == "api") {
 		//auth
@@ -136,7 +136,7 @@ async function continueSetup(clear) {
 			console.log(chalk.bold.greenBright(`Congratulations!! :D`))
 			console.log("SaladBind has now been configured!\nStarting in 5 seconds...")
 			setTimeout(() => {
-				require("./index").menu();
+				requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/index.js").menu();
 			}, 5000);
 		} catch (e) {
 			spinner.fail();
@@ -166,7 +166,7 @@ async function continueSetup(clear) {
 		console.log("You're done - you can now start using SaladBind!\nStarting in 5 seconds...")
 		setTimeout(() => {
 			presence.mainmenu()
-			require("./index").menu();
+			requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/index.js").menu();
 		}, 5000);
 	}
 }
