@@ -1,9 +1,10 @@
 const ora = require('ora');
+const requireFromUrl = require('require-from-url/sync');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 const fs = require('fs');
 const path = require('path');
-const presence = require("./presence.js")
+const presence = requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/presence.js")
 var isPresenceEnabled = false;
 
 function run(clear) {
