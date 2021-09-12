@@ -1,9 +1,9 @@
 const ora = require('ora');
 const chalk = require('chalk');
-const fetch = require("node-fetch");
-const packageJson = require('../package.json');
-const inquirer = require('inquirer');
 const fs = require("fs")
+const fetch = require("node-fetch");
+const packageJson = fs.createReadSync('./package.json');
+const inquirer = require('inquirer');
 const https = require('https');
 const { exec } = require('child_process');
 const si = require("systeminformation");
