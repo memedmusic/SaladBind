@@ -325,50 +325,69 @@ async function selectPool(minerData, algo) {
 				}, ...regionList]
 			});
 			if(region.region == "automatic") {
-				let spinner = ora("Calculating ping").start();
-				let pings = [];
-				let borkedRegion = false;
-				for await(regionToTest of regionList) {
-					var totalPing = 0;
-					var failedAttempts = 0;
-					for(let i=0;i<5;i++){
-						let domain = poolsy.algos[algo].host.split("://")[1].split(":")[0].replace("REGION", regionToTest.value);
-						spinner.text = `Pinging ${domain}`
-						let timeStarted = Date.now();
-						try {
-							await fetch("http://" + domain);
-						} catch (e) {
-							if(e.code == "ECONNRESET" || e.code == "ECONNCLOSED") {} else {
-								failedAttempts += 1;
-								if(failedAttempts == 5) {
-									borkedRegion = true;
-									break;
-								} else {
-									borkedRegion = false;
+				let autoRegionCacheData;
+				try {
+					autoRegionCacheData = JSON.parse(fs.readFileSync("./data/autoregion-cache.json"));
+				} catch {
+					fs.writeFileSync("./data/autoregion-cache.json", JSON.stringify({}));
+					autoRegionCacheData = {};
+				}
+				async function calculateBestRegion(silent = false) {
+					if(!silent) var spinner = ora("Calculating ping").start();
+					let pings = [];
+					let borkedRegion = false;
+					for await(regionToTest of regionList) {
+						var totalPing = 0;
+						var failedAttempts = 0;
+						for(let i=0;i<5;i++){
+							let domain = poolsy.algos[algo].host.split("://")[1].split(":")[0].replace("REGION", regionToTest.value);
+							if(!silent) spinner.text = `Pinging ${domain}`
+							let timeStarted = Date.now();
+							try {
+								await fetch("http://" + domain);
+							} catch (e) {
+								if(e.code == "ECONNRESET" || e.code == "ECONNCLOSED") {} else {
+									failedAttempts += 1;
+									if(failedAttempts == 5) {
+										borkedRegion = true;
+										break;
+									} else {
+										borkedRegion = false;
+									}
 								}
 							}
+							totalPing += Date.now() - timeStarted
 						}
-						totalPing += Date.now() - timeStarted
+						if(borkedRegion == true) continue;
+						pings.push({
+							region: regionToTest.value,
+							ping: Math.round(totalPing/5)
+						})
 					}
-					if(borkedRegion == true) continue;
-					pings.push({
-						region: regionToTest.value,
-						ping: Math.round(totalPing/5)
-					})
+					if(pings.length != 0) {
+						region.region = pings.sort((a, b) => a.ping - b.ping)[0].region;
+						if(!silent) spinner.succeed("Using " + region.region + " (" + pings.sort((a, b) => a.ping - b.ping)[0].ping + "ms)");
+						fs.writeFileSync("./data/autoregion-cache.json", JSON.stringify({
+							...autoRegionCacheData,
+							[poolsy.name]: region.region
+						}));
+						if(!silent) await (new Promise((res) => setTimeout(res, 1500)));
+					} else if(!silent) {
+						console.log(pings)
+						spinner.stop();
+						console.log("It seems like no regions are available right now.\nTry a different configuration, or try again later.");
+						setTimeout(() => {
+							require("./index").menu();
+						}, 3500);
+					}
 				}
-				if(pings.length != 0) {
-					region.region = pings.sort((a, b) => a.ping - b.ping)[0].region;
-					spinner.succeed("Using " + region.region + " (" + pings.sort((a, b) => a.ping - b.ping)[0].ping + "ms)");
-					await (new Promise((res) => setTimeout(res, 1500)));
-					prepStart(minerData, algo, poolsy, region.region);
+				if(fs.existsSync("./data/autoregion-cache.json") && autoRegionCacheData[poolsy.name]) {
+					region.region = autoRegionCacheData[poolsy.name];
+					calculateBestRegion(true);
 				} else {
-					console.log(pings)
-					spinner.stop();
-					console.log("It seems like no regions are available right now.\nTry a different configuration, or try again later.");
-					setTimeout(() => {
-						require("./index").menu();
-					}, 3500);
+					await calculateBestRegion();
 				}
+				prepStart(minerData, algo, poolsy, region.region);
 			} else {
 				prepStart(minerData, algo, poolsy, region.region);
 			}
