@@ -328,9 +328,8 @@ async function selectPool(minerData, algo) {
 				let spinner = ora("Calculating ping").start();
 				let pings = [];
 				for await(regionToTest of regionList) {
-					let i;
 					var totalPing = 0;
-					for(i=0;i<5;i++){
+					for(let i=0;i<5;i++){
 						let domain = poolsy.algos[algo].host.split("://")[1].split(":")[0].replace("REGION", regionToTest.value);
 						let timeStarted = Date.now();
 						try {
@@ -338,7 +337,7 @@ async function selectPool(minerData, algo) {
 						} catch {
 						// i dont care, still sent the request
 						}
-						totalPing = totalPing + Date.now() - timeStarted
+						totalPing += Date.now() - timeStarted
 					}
 					pings.push({
 						region: regionToTest.value,
