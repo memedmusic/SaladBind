@@ -338,9 +338,7 @@ async function selectPool(minerData, algo) {
 						try {
 							await fetch("http://" + domain);
 						} catch (e) {
-							if(e.code == "ECONNRESET" || e.code == "ECONNCLOSED") {
-								return;
-							} else {
+							if(e.code == "ECONNRESET" || e.code == "ECONNCLOSED") {} else {
 								failedAttempts += 1;
 								if(failedAttempts == 5) {
 									borkedRegion = true;
