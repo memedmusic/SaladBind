@@ -419,7 +419,6 @@ async function selectPool(minerData, algo) {
 }
 
 async function prepStart(minerData, algo, pool, region, advancedCommands, quick=false) {
-	if(quick==false)saveLast(lastMiner);
 	if (advancedCommands == undefined) advancedCommands = ""
 	console.clear();
 	console.log(chalk.bold.cyan(`Configure your miner`))
@@ -448,6 +447,10 @@ async function prepStart(minerData, algo, pool, region, advancedCommands, quick=
 	});
 	switch (startNow.startNow) {
 		case "y":
+			if(!quick) saveLast({
+				...lastMiner,
+				"advancedCommands": advancedCommands
+			});
 			presence.mine(minerData.miner, algo, pool.name)
 			startMiner(minerData, algo, pool, region, advancedCommands);
 			break;
@@ -700,21 +703,21 @@ async function startMiner(minerData, algo, pool, region, advancedCommands) {
 } 
 
 function saveLast(args){
-fs.writeFileSync("./data/last.json",JSON.stringify(
-	{
+fs.writeFileSync("./data/last.json", JSON.stringify({
 		algo: args.algo,
 		pool: args.pool,
 		region: args.region,
-		data: args.data
-	}
-	))}
+		data: args.data,
+		advancedCommands: args.advancedCommands
+	}));
+};
 
 async function quick(){
 	let details = fs.readFileSync("./data/last.json");
 	try{
 		details = JSON.parse(details)
 		presence.mine(details.data.miner, details.algo, details.pool)
-		prepStart(details.data, details.algo, details.pool, details.region, true);
+		prepStart(details.data, details.algo, details.pool, details.region, details.advancedCommands);
 	} catch {
 		console.log(chalk.red("Error while reading/parsing last.json"));
 		await inquirer.prompt([{

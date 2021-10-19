@@ -103,6 +103,7 @@ function getDebugData() {
 		last: last
 	}
 }
+
 presence.state.on('ready', () => {
 	presence.enable();
 	presence.mainmenu();
