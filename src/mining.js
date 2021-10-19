@@ -701,7 +701,7 @@ async function startMiner(minerData, algo, pool, region, advancedCommands) {
 } 
 
 function saveLast(args){
-fs.writeFileSync("./data/last.json",`{"miner":"${args.miner}","algo":"${args.algo}","pool":${JSON.stringify(args.pool)},"region":"${args.region}","data":${JSON.stringify(args.data)}}`)
+fs.writeFileSync("./data/last.json",JSON.stringify({miner:args.miner,algo:args.algo,pool:args.pool,region:args.region,data:args.data}))
 }
 async function quick(){
 	let details = await fs.readFileSync("./data/last.json")
