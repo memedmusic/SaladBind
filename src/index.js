@@ -72,7 +72,7 @@ function getDebugData() {
 		try {
 			configTest = JSON.parse(fs.readFileSync("./data/config.json").toString());
 		} catch {
-			configTest = "Error while reading/parsing"
+			configTest = "Error while reading/parsing config.json"
 		}
 	} else {
 		configTest = "None"
@@ -82,6 +82,12 @@ function getDebugData() {
 		miners = fs.readdirSync("./data/miners").join(", ")
 	} catch {
 		miners = "Error, data/miners folder might not exist or is unreachable."
+	}
+	let lastMiner
+	try {
+		lastMiner = JSON.parse(fs.readFileSync("./data/last.json").toString());
+	} catch {
+		lastMiner = "Error while reading/parsing last.json"
 	}
 	return {
 		configured: fs.existsSync("data/config.json"),
@@ -94,7 +100,8 @@ function getDebugData() {
 			user: presence?.state?.user?.username
 		},
 		platform: process.platform,
-		miners: miners
+		miners: miners,
+		lastMiner: lastMiner
 	}
 }
 presence.state.on('ready', () => {
