@@ -132,34 +132,44 @@ async function menu(clear) {
 	}
 	presence.mainmenu();
 	console.log(chalk.bold.green(`${aprilfools ? "VegetableJoiner" : "SaladBind"} v${packageJson.version}`));
+	let choices = [{
+		name: 'Start mining',
+		value: 'mining'
+	},
+	{
+		name: 'Reconfigure SaladBind',
+		value: 'config'
+	},
+	{
+		name: 'Join the SaladBind Discord',
+		value: 'discord'
+	},
+	{
+		name: 'What\'s new?',
+		value: 'changes'
+	},
+	{
+		name: 'Exit SaladBind',
+		value: 'exit'
+	}
+]
+if(fs.existsSync("./data/last.json")){
+	choices.unshift({
+		name: 'Quick Start',
+		value: 'quick'
+	})
+}
 	const questions = [{
 		type: 'list',
 		name: 'menu',
 		message: 'What would you like to do?',
-		choices: [{
-				name: 'Start mining',
-				value: 'mining'
-			},
-			{
-				name: 'Reconfigure SaladBind',
-				value: 'config'
-			},
-			{
-				name: 'Join the SaladBind Discord',
-				value: 'discord'
-			},
-			{
-				name: 'What\'s new?',
-				value: 'changes'
-			},
-			{
-				name: 'Exit SaladBind',
-				value: 'exit'
-			}
-		]
+		choices: choices
 	}];
 	const answers = await inquirer.prompt(questions);
 	switch (answers.menu) {
+		case 'quick':
+			require("./mining").quick();
+			break;
 		case 'mining':
 			require("./mining").run();
 			break;
