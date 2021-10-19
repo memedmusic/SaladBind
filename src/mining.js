@@ -705,10 +705,18 @@ fs.writeFileSync("./data/last.json",`{"miner":"${args.miner}","algo":"${args.alg
 }
 async function quick(){
 	let details = await fs.readFileSync("./data/last.json")
-	details = JSON.parse(details)
-	presence.mine(details.miner, details.algo, details.pool)
-	prepStart(details.data, details.algo, details.pool, details.region, true);
-	;
+	try{
+		details = JSON.parse(details)
+		presence.mine(details.miner, details.algo, details.pool)
+		prepStart(details.data, details.algo, details.pool, details.region, true);
+	} catch {
+		console.log(chalk.red("Error while reading/parsing last.json. Returning to SaladBind menu"));
+		fs.unlinkSync("./data/last.json")
+		setTimeout(function(){
+			require("./index").menu(false)
+		},5000)
+	}
+
 }
 module.exports = { 
 	run,
