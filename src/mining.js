@@ -196,7 +196,6 @@ async function continueMiner() {
 					menu(true);
 					return;
 				}
-				lastMiner.miner = miner.miner.miner
 				lastMiner.data = miner.miner
 				if (fs.existsSync(`./data/miners/${miner.miner.miner}-${miner.miner.version}`)) {
 					let minerFolder = fs.readdirSync(`./data/miners/${miner.miner.miner}-${miner.miner.version}`);
@@ -701,20 +700,38 @@ async function startMiner(minerData, algo, pool, region, advancedCommands) {
 } 
 
 function saveLast(args){
-fs.writeFileSync("./data/last.json",JSON.stringify({miner:args.miner,algo:args.algo,pool:args.pool,region:args.region,data:args.data}))
-}
+fs.writeFileSync("./data/last.json",JSON.stringify(
+	{
+		algo: args.algo,
+		pool: args.pool,
+		region: args.region,
+		data: args.data
+	}
+	))}
+
 async function quick(){
 	let details = await fs.readFileSync("./data/last.json")
 	try{
 		details = JSON.parse(details)
-		presence.mine(details.miner, details.algo, details.pool)
+		presence.mine(details.data.miner, details.algo, details.pool)
 		prepStart(details.data, details.algo, details.pool, details.region, true);
 	} catch {
-		console.log(chalk.red("Error while reading/parsing last.json. Returning to SaladBind menu"));
-		fs.unlinkSync("./data/last.json")
+		console.log(chalk.red("Error while reading/parsing last.json"));
+		await inquirer.prompt([{
+			type: 'confirm',
+			name: 'delete',
+			message: chalk.yellow("Delete the corrupt file?"),
+			default: false
+		}]).then(function(answers) {
+			if (answers.delete) {
+				fs.unlinkSync("./data/last.json")
+				console.log(chalk.red("File deleted"));
+			}
+		});
+		console.log("Returning to menu in 3 seconds")
 		setTimeout(function(){
-			require("./index").menu(false)
-		},5000)
+			require("./index").menu(true)
+		},3000)
 	}
 
 }
