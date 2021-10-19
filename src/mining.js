@@ -196,7 +196,7 @@ async function continueMiner() {
 					menu(true);
 					return;
 				}
-				lastMiner.data = miner.miner
+				lastMiner.data = miner.miner;
 				if (fs.existsSync(`./data/miners/${miner.miner.miner}-${miner.miner.version}`)) {
 					let minerFolder = fs.readdirSync(`./data/miners/${miner.miner.miner}-${miner.miner.version}`);
 					if (minerFolder.filter(file => file.startsWith(miner.miner.parameters.fileName)).length == 0) {
@@ -710,7 +710,7 @@ fs.writeFileSync("./data/last.json",JSON.stringify(
 	))}
 
 async function quick(){
-	let details = await fs.readFileSync("./data/last.json")
+	let details = fs.readFileSync("./data/last.json");
 	try{
 		details = JSON.parse(details)
 		presence.mine(details.data.miner, details.algo, details.pool)

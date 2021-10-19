@@ -67,41 +67,40 @@ const update = require("./update.js")
 const presence = require("./presence.js");
 
 function getDebugData() {
-	let configTest;
-	if(fs.existsSync("./data/config.json")) {
-		try {
-			configTest = JSON.parse(fs.readFileSync("./data/config.json").toString());
-		} catch {
-			configTest = "Error while reading/parsing config.json"
+	function safelyReadAndParseFile(name) {
+		let data;
+		if(fs.existsSync(name)) {
+			try {
+				data = JSON.parse(fs.readFileSync(name).toString());
+			} catch {
+				data = "Error while reading/parsing"
+			}
+		} else {
+			data = "None"
 		}
-	} else {
-		configTest = "None"
+		return data
 	}
+	let configData = safelyReadAndParseFile("./data/config.json")
 	let miners;
 	try {
 		miners = fs.readdirSync("./data/miners").join(", ")
 	} catch {
 		miners = "Error, data/miners folder might not exist or is unreachable."
 	}
-	let lastMiner
-	try {
-		lastMiner = JSON.parse(fs.readFileSync("./data/last.json").toString());
-	} catch {
-		lastMiner = "Error while reading/parsing last.json"
-	}
+	let last = safelyReadAndParseFile("./data/last.json");
 	return {
 		configured: fs.existsSync("data/config.json"),
 		__dirname: __dirname,
 		cwd: process.cwd(),
 		version: packageJson.version,
-		config: config,
+		config: configData,
 		discordRPC: {
 			connected: typeof presence?.state?.user?.username != "undefined",
 			user: presence?.state?.user?.username
 		},
 		platform: process.platform,
 		miners: miners,
-		lastMiner: lastMiner
+		last: last
 	}
 }
 presence.state.on('ready', () => {
