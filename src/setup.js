@@ -236,7 +236,11 @@ async function save(setting, value){
 		}
 		let config = {}
 		if (fs.existsSync("./data/config.json")){
-			config = await JSON.parse(fs.readFileSync("./data/config.json"))
+			try{
+				config = await JSON.parse(fs.readFileSync("./data/config.json"))
+			} catch{
+				config = {}
+			}
 		}
 		config[setting] = value;
 		fs.writeFileSync("./data/config.json",JSON.stringify(config));
