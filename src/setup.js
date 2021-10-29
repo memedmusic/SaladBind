@@ -3,57 +3,85 @@ const chalk = require('chalk');
 const inquirer = require('inquirer');
 const fs = require('fs');
 const path = require('path');
-const presence = require("./presence.js")
+const presence = require("./presence.js");
+const { config } = require('process');
 var isPresenceEnabled = false;
 var firstTime = false;
 
-function run(clear) {
-	if (clear == undefined || clear == true) {
-		console.clear();
-		console.log(chalk.bold.cyan(`Configure SaladBind`))
-	}
-	if (fs.existsSync('./data/config.json')) {
-		continueSetup();
-	} else {
+async function run(clear = false) {
+	let configData;
+	if (clear) console.clear();
+	if (!fs.existsSync('./data/config.json')){
 		firstTime = true;
-		continueSetup(clear);
+	} else{
+		configData = await JSON.parse(fs.readFileSync("./data/config.json"))
 	}
+	main(configData);
 }
-async function continueSetup(clear) {
-	if (clear == undefined || clear == true) {
-		console.clear();
-		console.log(chalk.bold.cyan(`Configure SaladBind`))
-	}
-	if(firstTime) {
+
+async function main(configData = {}) {
+	console.clear()
+	if (firstTime) {
 		console.log(`${chalk.greenBright.bold("Welcome to SaladBind!")}
 This is a program that makes it easier to select a miner, algorithm, and pool for Salad! 
 All of the money you mine using SaladBind goes to Salad, and all Salad boosts and XP will work in SaladBind.
 		`);
 	}
+	const prompt = await inquirer.prompt([{
+		type: 'list',
+		name: "settings",
+		message: chalk.bold.cyan(`Configure SaladBind`),
+		choices: [{
+				name: `Discord RPC ${configData.discordPresence ? chalk.green("(Enabled)") : chalk.red("(Disabled)")}`,
+				value: "discord"
+			},
+			{
+				name: `Update Miner Details ${configData.id != undefined || configData.minerId != undefined ? "" : chalk.bold.red("(Attention needed!!!)")}`,
+				value: "miner"
+			}, {
+				name: `${chalk.red("Go Back")}`,
+				value: "back"
+			}
+		]
+	}]);
+	if (prompt.settings == "back") {
+		if(configData.id != undefined || configData.minerId != undefined ){
+		require("./index.js").menu(true)
+		}
+		else{run(true)}
+	} 
+	if (prompt.settings == "discord") {
+		discord()
+	}
+	if (prompt.settings =="miner") {
+		miner()
+	}
+}
+
+async function discord(){
 	console.log(`Discord Rich Presence means that your Discord friends and people in Discord servers will see that you use SaladBind. 
-They will see your SaladBind version, miner, algorithm, and pool on your Discord profile.
-In order for this to work, you'll need to have the Discord desktop app installed.
-	`);
-	await inquirer.prompt([{
-		type: 'confirm',
-		name: 'presence',
-		message: chalk.yellow("Enable Discord Rich Presence? (may require app restart)"),
-		default: false
-	}]).then(function(answers) {
-		if (answers.presence) {
+	They will see your SaladBind version, miner, algorithm, and pool on your Discord profile.
+	In order for this to work, you'll need to have the Discord desktop app installed.
+		`);
+		var prompt = await inquirer.prompt([{
+			type: 'confirm',
+			name: 'presence',
+			message: chalk.yellow("Enable Discord Rich Presence? (may require app restart)"),
+			default: false
+		}])
+		let isPresenceEnabled
+		if (prompt.presence) {
 			isPresenceEnabled = true;
 		} else {
 			presence.disconnect();
+			isPresenceEnabled = false;
 		}
-	});
-	
-	console.clear();
-	if(firstTime) {
-		console.clear();
-		console.log(chalk.greenBright.bold("Welcome to SaladBind!"));
-	}
-	console.log(`Now it's time to get your Rig ID.\nThis is needed in order for Salad to see which account to put the mined money in.\n`);
+		await save("discordPresence", isPresenceEnabled)
+		console.clear()
+		run(true)
+}
 
+async function miner(){
 	const promptResult = await inquirer.prompt([{
 		type: 'list',
 		name: "useapi",
@@ -80,7 +108,7 @@ In order for this to work, you'll need to have the Discord desktop app installed
 			} else if (process.platform == "linux") {
 				logPath = path.join(process.env.HOME, ".config", "Salad", "logs", filename);
 			} else if (process.platform == "darwin") {
-				logPath = path.join(process.env.HOME, "Library", "Logs", "Salad", filename); // untested, google says it works
+				logPath = path.join(process.env.HOME, "Library", "Logs", "Salad", filename);
 			}
 			let logFileContent;
 			try {
@@ -100,13 +128,13 @@ In order for this to work, you'll need to have the Discord desktop app installed
 		}
 		let spinner = ora("Searching...").start();
 		let idJSON = getIDFromLogs("main.log") ?? getIDFromLogs("main.old.log")
-		let rigID = idJSON?.rigID;
-		let id = idJSON?.id;
+		let rigID = idJSON.rigID;
+		let id = idJSON.id;
 		if (!rigID) {
 			spinner.fail()
 			console.log(chalk.bold.red("Could not find your Rig ID! Please make sure that you have mined for at least 5 minutes using Salad's official application after restarting it."));
 			setTimeout(() => {
-				continueSetup()
+				run(true)
 			}, 3500);
 			return;
 		}
@@ -118,25 +146,19 @@ In order for this to work, you'll need to have the Discord desktop app installed
 				name: 'skipProhashing',
 				message: `Continue without your Prohashing ID? ${chalk.yellow.bold("If you say yes, you cannot use the Prohashing pool which has several advantages.")}`,
 				default: false
-			}])
+			}]).then(function(answers) {
+				if (!answers.skipProhashing) {
+					return;
+				}
+			});
 			if(skipProhashing.skipProhashing == false) {
-				return await continueSetup(true);
+				return await run(true);
 			}
 		}
-
 		spinner.succeed();
-		spinner = ora("Saving...").start();
-		if (!fs.existsSync("./data")) {
-			fs.mkdirSync("./data");
-		}
-		fs.writeFileSync("./data/config.json", JSON.stringify({"id":id, "minerId": rigID, "discordPresence": isPresenceEnabled }));
-		spinner.succeed();
-		console.log(chalk.bold.greenBright(`That's all there is to it!`))
-		console.log(`You're done - you can now start using SaladBind!\nStarting in 5 seconds...`)
-		setTimeout(() => {
-			console.clear();
-			require("./index").menu();
-		}, 5000);
+		await save("id",id)
+		await save("minerId",rigID)
+		run(true)
 	} else if (promptResult.useapi == "api") {
 		console.clear();
 		//auth
@@ -153,31 +175,20 @@ In order for this to work, you'll need to have the Discord desktop app installed
 			}
 		}]);
 		if(auth.auth == "cancel") {
-			return await continueSetup(true);
+			return await run(true);
 		}
 		const spinner = ora("Getting miner details...").start();
 		try {
 			let minerDetails = await require("./getMachine").getInfo(auth.auth);
-			if (!fs.existsSync("./data")) {
-				fs.mkdirSync("./data");
-			}
-			fs.writeFileSync("./data/config.json", JSON.stringify({"id":minerDetails.id, "minerId": minerDetails.minerId, "discordPresence": isPresenceEnabled }));
-			
-			spinner.stop();
+			spinner.succeed()
+			await save("id",minerDetails.id)
+			await save("minerId",minerDetails.minerId)
 			console.clear();
-			console.log(chalk.bold.greenBright(`That's all there is to it!`))
-			console.log("You are now ready to use SaladBind.\nStarting in 5 seconds...")
-			setTimeout(() => {
-				require("./index").menu();
-			}, 5000);
+			run(true)
 		} catch (e) {
 			spinner.fail();
 			console.log(e);
-			console.log(chalk.bold.red("Failed to get your Rig ID! This is most likely your auth code being expired, try refreshing app.salad.io in your browser and getting the token again.\nIf that does not work, please contact us at https://discord.gg/HfBAtQ2afz."));
-			console.log("Going back in 20 seconds");
-			setTimeout(() => {
-				continueSetup(true);
-			}, 20000);
+			console.log(chalk.bold.red("Failed to get your Rig ID! Please contact support on our Discord server (https://discord.gg/HfBAtQ2afz) and attach an image of the data above."));
 		}
 	} else {
 		console.clear();
@@ -212,27 +223,27 @@ In order for this to work, you'll need to have the Discord desktop app installed
 			}
 		}]);
 		if(worker.id == "cancel") {
-			return await continueSetup(true);
+			return await run(true);
 		}
-		const spinner = ora("Saving...").start();
-		if (!fs.existsSync("./data")) {
-			fs.mkdirSync("./data");
-		}
-		fs.writeFileSync("./data/config.json", JSON.stringify({ "id":idPrompt.id, "minerId": worker.id, "discordPresence": isPresenceEnabled }));
-		spinner.stop();
-		console.clear();
-		console.log(chalk.bold.greenBright(`That's all there is to it!`))
-		console.log("You're done - you can now start using SaladBind!\nStarting in 5 seconds...")
-		setTimeout(() => {
-			presence.mainmenu()
-			require("./index").menu();
-		}, 5000);
+		await save("id",idPrompt.id)
+		await save("minerId",worker.id)
+		run(true)
 	}
 }
 
-
-
+async function save(setting, value){
+		if (!fs.existsSync("./data")) {
+			fs.mkdirSync("./data");
+		}
+		let config = {}
+		if (fs.existsSync("./data/config.json")){
+			config = await JSON.parse(fs.readFileSync("./data/config.json"))
+		}
+		config[setting] = value;
+		fs.writeFileSync("./data/config.json",JSON.stringify(config));
+}
 
 module.exports = {
 	run
-};
+}
+
