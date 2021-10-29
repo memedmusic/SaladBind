@@ -4,7 +4,6 @@ const inquirer = require('inquirer');
 const fs = require('fs');
 const path = require('path');
 const presence = require("./presence.js");
-const { config } = require('process');
 var isPresenceEnabled = false;
 var firstTime = false;
 
@@ -128,8 +127,8 @@ async function miner(){
 		}
 		let spinner = ora("Searching...").start();
 		let idJSON = getIDFromLogs("main.log") ?? getIDFromLogs("main.old.log")
-		let rigID = idJSON.rigID;
-		let id = idJSON.id;
+		let rigID = idJSON?.rigID;
+		let id = idJSON?.id;
 		if (!rigID) {
 			spinner.fail()
 			console.log(chalk.bold.red("Could not find your Rig ID! Please make sure that you have mined for at least 5 minutes using Salad's official application after restarting it."));
