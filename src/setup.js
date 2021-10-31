@@ -31,28 +31,30 @@ All of the money you mine using SaladBind goes to Salad, and all Salad boosts an
 		name: "settings",
 		message: chalk.bold.cyan(`Configure SaladBind`),
 		choices: [{
-				name: `Discord RPC ${configData.discordPresence ? chalk.green("(Enabled)") : chalk.red("(Disabled)")}`,
+				name: `Discord RPC ${configData.discordPresence ? chalk.green("(Enabled)") : chalk.redBright("(Disabled)")}`,
 				value: "discord"
 			},
 			{
 				name: `Update Miner Details ${configData.id != undefined || configData.minerId != undefined ? "" : chalk.bold.red("(Attention needed!!!)")}`,
 				value: "miner"
-			}, {
-				name: `${chalk.red("Go Back")}`,
+			},
+			{
+				name: `${firstTime ? chalk.greenBright("Finish") : chalk.redBright("Go Back")}`,
 				value: "back"
 			}
 		]
 	}]);
 	if (prompt.settings == "back") {
-		if(configData.id != undefined || configData.minerId != undefined ){
-		require("./index.js").menu(true)
+		if(configData.minerId != undefined ){
+			require("./index.js").menu(true);
 		}
-		else{run(true)}
+		else{
+			run(true);
+		}
 	} 
 	if (prompt.settings == "discord") {
 		discord()
-	}
-	if (prompt.settings =="miner") {
+	} else if (prompt.settings == "miner") {
 		miner()
 	}
 }
