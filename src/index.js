@@ -69,6 +69,16 @@ const presence = require("./presence.js");
 const { configFile, dataDirectory, saladbind_directory, run} = require("./setup");
 const envPaths = require('env-paths');
 
+async function validateConfig(){
+	if(fs.existsSync(`${envPaths('SaladBind', { suffix: "" }).config}/config.json`)){
+		let config = fs.readFileSync(`${envPaths('SaladBind', { suffix: "" }).config}/config.json`)
+		if(config.id == undefined){
+			require("./setup").run();
+		}
+	}
+}
+validateConfig()
+
 function getDebugData() {
 	function safelyReadAndParseFile(name) {
 		let data;
