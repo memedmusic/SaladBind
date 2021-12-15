@@ -366,7 +366,7 @@ async function selectPool(minerData, algo) {
 						var failedAttempts = 0;
 						for(let i=0;i<5;i++){
 							try{
-							let domain = poolsy.algos[algo].host.split("://")[1].replace("REGION", regionToTest.value)
+							let domain = poolsy.algos[algo].host.split("://")[1].split(":")[0].replace("REGION", regionToTest.value)
 							if(!silent) spinner.text = `Pinging ${domain} (${i+1}/5)`
 							let timeStarted = Date.now();
 							try {
