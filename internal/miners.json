@@ -141,7 +141,6 @@
                 "ethash",
                 "etchash",
                 "kawpow",
-                "EQUI144_5"
             ],
             "supported_gpus": [
                 "nvidia",
