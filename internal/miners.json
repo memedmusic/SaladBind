@@ -159,7 +159,7 @@
                 "wallet": "-u",
                 "pool": "-s",
                 "pass": "-p",
-                "port": " -n"
+                "port": " -n "
             }
         },
         "lolminer": {
