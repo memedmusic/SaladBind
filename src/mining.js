@@ -629,7 +629,7 @@ async function startMiner(minerData, algo, pool, region, advancedCommands) {
 	if(minerData.miner == "GMiner") {
 		pool.algos[algo].host = pool.algos[algo].host.replace("stratum+tcp://", "");
 		pool.algos[algo].host = pool.algos[algo].host.replace("ethproxy+ssl://", "");
-		pool.algos[algo].host = `${pool.algos[algo].host.split(":")[0]} -n ${pool.algos[algo].host.split(":")[1]}`
+		pool.algos[algo].host = `${pool.algos[algo].host.split(":")[0]} -n ${pool.name=="Ethermine"?4444:pool.algos[algo].host.split(":")[1]}`//grr 
 	}
 	if(pool.name == "Prohashing") {
 		if(minerData.parameters.wallet == "PHOENIX") {
@@ -656,9 +656,6 @@ async function startMiner(minerData, algo, pool, region, advancedCommands) {
 		}
 	} else {
 	defaultArgs.pass = ""
-	if(pool.name == "Ethermine" && minerData.miner == "GMiner"){
-		pool.algos[algo].port = "4444"//gminer being annoything
-	}
 	if (minerData.parameters.wallet != "") { // poo
 		if(minerData.parameters.wallet == "PHOENIX") {
 			if(algo == "ethash") {
