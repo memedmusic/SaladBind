@@ -304,9 +304,11 @@ async function selectPool(minerData, algo) {
 				for (let i = 0; i < Object.keys(poolData).length; i++) {
 					let pooly = poolData[Object.keys(poolData)[i]];
 					if (Object.keys(pooly.algos).includes(algo)) {
-						if (pooly.name != "Prohashing") {
+						if (pooly.name != "Prohashing" && pooly.name !="Ethermine") {
 							poolList.push({ name: pooly.name, value: pooly });
-						} else if (config.id && config.id.length > 1) {
+						} else if(pooly.name == "Ethermine" && minerData.miner == "GMiner"){
+							//do nothing
+						}else if (config.id && config.id.length > 1) {
 							poolList.push({ name: pooly.name, value: pooly });
 						}
 					}
@@ -365,7 +367,8 @@ async function selectPool(minerData, algo) {
 						var totalPing = 0;
 						var failedAttempts = 0;
 						for(let i=0;i<5;i++){
-							let domain = poolsy.algos[algo].host.split("://")[1].split(":")[0].replace("REGION", regionToTest.value);
+							try{
+							let domain = console.log(poolsy.algos[algo].host.split("://")[1].replace("REGION", regionToTest.value))
 							if(!silent) spinner.text = `Pinging ${domain} (${i+1}/5)`
 							let timeStarted = Date.now();
 							try {
@@ -382,7 +385,10 @@ async function selectPool(minerData, algo) {
 								}
 							}
 							totalPing += Date.now() - timeStarted
+						}catch{
+						//gminer being sussy
 						}
+					}
 						if(borkedRegion == true) continue;
 						pings.push({
 							region: regionToTest.value,
@@ -622,18 +628,21 @@ async function startMiner(minerData, algo, pool, region, advancedCommands) {
 	if(minerData.miner == "TeamRedMiner" && pool.name == "Ethermine") {
 		pool.algos[algo].host = pool.algos[algo].host.replace("ethproxy+ssl", "stratum+ssl");
 	}
+	if(minerData.miner == "GMiner") {
+		pool.algos[algo].host = pool.algos[algo].host.replace("stratum+tcp://", "");
+	}
 	if(pool.name == "Prohashing") {
 		if(minerData.parameters.wallet == "PHOENIX") {
 			if(algo == "ethash") {
 				defaultArgs.wallet = `-wal ${wallet}`
 				defaultArgs.algo = `-coin eth`
 				defaultArgs.pass = `-pass o=${config.id},n=${config.id}`
-				defaultArgs.pool = `${minerData.parameters.pool} ${pool.algos[algo].host.replace("REGION", region)}${minerData.miner == "PhoenixMiner" && hasAMD ? " -clKernel 0 " : ""}${minerData.miner == "lolMiner" ? " --pers BgoldPoW " : ""}`
+				defaultArgs.pool = `${minerData.parameters.pool} ${pool.algos[algo].host.replace("REGION", region)}${minerData.parameters.port}${pool.algos[algo].port}${minerData.miner == "PhoenixMiner" && hasAMD ? " -clKernel 0 " : ""}${minerData.miner == "lolMiner" ? " --pers BgoldPoW " : ""}`
 			} else if(algo == "etchash") {
 				defaultArgs.wallet = `-wal ${wallet}`
 				defaultArgs.algo = `-coin etc`
 				defaultArgs.pass = `-pass o=${config.id},n=${config.id}`
-				defaultArgs.pool = `${minerData.parameters.pool} ${pool.algos[algo].host.replace("REGION", region)}${minerData.miner == "PhoenixMiner" && hasAMD ? " -clKernel 0 " : ""}${minerData.miner == "lolMiner" ? " --pers BgoldPoW " : ""}`
+				defaultArgs.pool = `${minerData.parameters.pool} ${pool.algos[algo].host.replace("REGION", region)}${minerData.parameters.port}${pool.algos[algo].port}${minerData.miner == "PhoenixMiner" && hasAMD ? " -clKernel 0 " : ""}${minerData.miner == "lolMiner" ? " --pers BgoldPoW " : ""}`
 			}
 		} else {
 			defaultArgs.wallet = `${minerData.parameters.wallet} ${wallet}`
@@ -642,7 +651,7 @@ async function startMiner(minerData, algo, pool, region, advancedCommands) {
 			} else {
 				defaultArgs.algo = ""
 			}
-			defaultArgs.pool = `${minerData.parameters.pool} ${pool.algos[algo].host.replace("REGION", region)}${minerData.miner == "lolMiner" && algo == "EQUI144_5" ? " --pers BgoldPoW " : ""}${minerData.miner == "xmrig" && algo == "kawpow" ? " --no-cpu --opencl " : ""}`
+			defaultArgs.pool = `${minerData.parameters.pool} ${pool.algos[algo].host.replace("REGION", region)}${minerData.parameters.port}${pool.algos[algo].port}${minerData.miner == "lolMiner" && algo == "EQUI144_5" ? " --pers BgoldPoW " : ""}${minerData.miner == "xmrig" && algo == "kawpow" ? " --no-cpu --opencl " : ""}`
 			defaultArgs.pass = `${minerData.parameters.pass} o=${config.id},n=${config.id}`
 		}
 	} else {
@@ -652,11 +661,11 @@ async function startMiner(minerData, algo, pool, region, advancedCommands) {
 			if(algo == "ethash") {
 				defaultArgs.wallet = `-wal ${wallet}.${config.minerId}`
 				defaultArgs.algo = `-coin eth`
-				defaultArgs.pool = `${minerData.parameters.pool} ${pool.algos[algo].host.replace("REGION", region)}${minerData.miner == "PhoenixMiner" && pool.name == "NiceHash" ? " -proto 4 " : ""}${minerData.miner == "PhoenixMiner" && hasAMD ? " -clKernel 0 " : ""}${minerData.miner == "lolMiner" ? " --pers BgoldPoW " : ""}`
+				defaultArgs.pool = `${minerData.parameters.pool} ${pool.algos[algo].host.replace("REGION", region)}${minerData.parameters.port}${pool.algos[algo].port}${minerData.miner == "PhoenixMiner" && pool.name == "NiceHash" ? " -proto 4 " : ""}${minerData.miner == "PhoenixMiner" && hasAMD ? " -clKernel 0 " : ""}${minerData.miner == "lolMiner" ? " --pers BgoldPoW " : ""}`
 			} else if(algo == "etchash") {
 				defaultArgs.wallet = `-wal ${wallet}.${config.minerId}`
 				defaultArgs.algo = `-coin etc`
-				defaultArgs.pool = `${minerData.parameters.pool} ${pool.algos[algo].host.replace("REGION", region)}${minerData.miner == "PhoenixMiner" && pool.name == "NiceHash" ? " -proto 4 " : ""}${minerData.miner == "PhoenixMiner" && hasAMD ? " -clKernel 0 " : ""}${minerData.miner == "lolMiner" ? " --pers BgoldPoW " : ""}`
+				defaultArgs.pool = `${minerData.parameters.pool} ${pool.algos[algo].host.replace("REGION", region)}${minerData.parameters.port}${pool.algos[algo].port}${minerData.miner == "PhoenixMiner" && pool.name == "NiceHash" ? " -proto 4 " : ""}${minerData.miner == "PhoenixMiner" && hasAMD ? " -clKernel 0 " : ""}${minerData.miner == "lolMiner" ? " --pers BgoldPoW " : ""}`
 			}
 		} else {
 			defaultArgs.wallet = `${minerData.parameters.wallet} ${wallet}.${config.minerId}${minerData.miner == "T-Rex" ? ` -w ${config.minerId} ` : ""}`
@@ -665,9 +674,10 @@ async function startMiner(minerData, algo, pool, region, advancedCommands) {
 			} else {
 				defaultArgs.algo = ""
 			}
-			defaultArgs.pool = `${minerData.parameters.pool} ${pool.algos[algo].host.replace("REGION", region)}${minerData.miner == "PhoenixMiner" && pool.name == "NiceHash" ? " -proto 4 " : ""}${minerData.miner == "PhoenixMiner" && hasAMD ? " -clKernel 0 " : ""}${minerData.miner == "lolMiner" && algo == "EQUI144_5" ? " --pers BgoldPoW " : ""}${minerData.miner == "xmrig" && algo == "kawpow" ? " --no-cpu --opencl " : ""}`
+			defaultArgs.pool = `${minerData.parameters.pool} ${pool.algos[algo].host.replace("REGION", region)}${minerData.parameters.port}${pool.algos[algo].port}${minerData.miner == "PhoenixMiner" && pool.name == "NiceHash" ? " -proto 4 " : ""}${minerData.miner == "PhoenixMiner" && hasAMD ? " -clKernel 0 " : ""}${minerData.miner == "lolMiner" && algo == "EQUI144_5" ? " --pers BgoldPoW " : ""}${minerData.miner == "xmrig" && algo == "kawpow" ? " --no-cpu --opencl " : ""}`
 		} //i grabbed this from an older build because i accidentally removed a part so it didnt have it yet im a idiot
 	} else {
+		try{
 		let poolUrl = pool.algos[algo].host
 		let poolScheme = poolUrl.split("://")[0]
 		poolScheme = poolScheme.replace("stratum", "stratum2")
@@ -682,6 +692,9 @@ async function startMiner(minerData, algo, pool, region, advancedCommands) {
 		if (minerData.parameters.algo != "") {
 			defaultArgs.algo = `${minerData.parameters.algo} ${algo}`
 		}
+	} catch{
+		//gminer lol
+	}
 	}
 }
 	let timeStarted = Date.now();
