@@ -36,7 +36,6 @@
                 "wallet": "PHOENIX",
                 "pool": "-pool",
                 "pass": "-pass",
-                "port": ":"
             }
         },
         "trex": {
@@ -67,7 +66,6 @@
                 "wallet": "-u",
                 "pool": "-o",
                 "pass": "-p",
-                "port": ":"
             }
         },
         "nbminer": {
@@ -100,7 +98,6 @@
                 "wallet": "-u",
                 "pool": "-o",
                 "pass": "-p",
-                "port": ":"
             }
         },
         "teamredminer": {
@@ -129,7 +126,6 @@
                 "wallet": "-u",
                 "pool": "-o",
                 "pass": "-p",
-                "port": ":"
             }
         },  "GMiner": {
             "miner": "GMiner",
@@ -140,7 +136,7 @@
             "algos": [
                 "ethash",
                 "etchash",
-                "kawpow",
+                "kawpow"
             ],
             "supported_gpus": [
                 "nvidia",
@@ -158,7 +154,6 @@
                 "wallet": "-u",
                 "pool": "-s",
                 "pass": "-p",
-                "port": " -n "
             }
         },
         "lolminer": {
@@ -189,7 +184,6 @@
                 "wallet": "--user",
                 "pool": "--pool",
                 "pass": "--pass",
-                "port": ":"
             }
         },
         "xmrig": {
@@ -217,7 +211,6 @@
                 "wallet": "-u",
                 "pool": "-o",
                 "pass": "-p",
-                "port": ":"
             }
         }
     }
