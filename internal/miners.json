@@ -35,7 +35,8 @@
                 "algo": "",
                 "wallet": "PHOENIX",
                 "pool": "-pool",
-                "pass": "-pass"
+                "pass": "-pass",
+                "port": ":"
             }
         },
         "trex": {
@@ -65,7 +66,8 @@
                 "algo": "-a",
                 "wallet": "-u",
                 "pool": "-o",
-                "pass": "-p"
+                "pass": "-p",
+                "port": ":"
             }
         },
         "nbminer": {
@@ -97,7 +99,8 @@
                 "algo": "-a",
                 "wallet": "-u",
                 "pool": "-o",
-                "pass": "-p"
+                "pass": "-p",
+                "port": ":"
             }
         },
         "teamredminer": {
@@ -125,7 +128,8 @@
                 "algo": "-a",
                 "wallet": "-u",
                 "pool": "-o",
-                "pass": "-p"
+                "pass": "-p",
+                "port": ":"
             }
         },  "GMiner": {
             "miner": "GMiner",
@@ -154,7 +158,8 @@
                 "algo": "-a",
                 "wallet": "-u",
                 "pool": "-s",
-                "pass": "-p"
+                "pass": "-p",
+                "port": " -n"
             }
         },
         "lolminer": {
@@ -184,7 +189,8 @@
                 "algo": "--algo",
                 "wallet": "--user",
                 "pool": "--pool",
-                "pass": "--pass"
+                "pass": "--pass",
+                "port": ":"
             }
         },
         "xmrig": {
@@ -211,7 +217,8 @@
                 "algo": "-a",
                 "wallet": "-u",
                 "pool": "-o",
-                "pass": "-p"
+                "pass": "-p",
+                "port": ":"
             }
         }
     }
