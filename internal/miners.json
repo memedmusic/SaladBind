@@ -127,6 +127,35 @@
                 "pool": "-o",
                 "pass": "-p"
             }
+        },  "GMiner": {
+            "miner": "GMiner",
+            "download": {
+                "win32": "https://github.com/develsoftware/GMinerRelease/releases/download/2.74/gminer_2_74_windows64.zip",
+                "linux": "https://github.com/develsoftware/GMinerRelease/releases/download/2.74/gminer_2_74_linux64.tar.xz"
+            },
+            "algos": [
+                "ethash",
+                "etchash",
+                "kawpow",
+                "EQUI144_5"
+            ],
+            "supported_gpus": [
+                "nvidia",
+                "amd"
+            ],
+            "supported_os": [
+                "win32",
+                "linux"
+            ],
+            "fee": 1,
+            "version": "2.74",
+            "parameters": {
+                "fileName": "miner",
+                "algo": "-a",
+                "wallet": "-u",
+                "pool": "-s",
+                "pass": "-p"
+            }
         },
         "lolminer": {
             "miner": "lolMiner",
