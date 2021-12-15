@@ -304,11 +304,9 @@ async function selectPool(minerData, algo) {
 				for (let i = 0; i < Object.keys(poolData).length; i++) {
 					let pooly = poolData[Object.keys(poolData)[i]];
 					if (Object.keys(pooly.algos).includes(algo)) {
-						if (pooly.name != "Prohashing" && pooly.name !="Ethermine") {
+						if (pooly.name != "Prohashing") {
 							poolList.push({ name: pooly.name, value: pooly });
-						} else if(pooly.name == "Ethermine" && minerData.miner == "GMiner"){
-							//do nothing
-						}else if (config.id && config.id.length > 1) {
+						} else if (config.id && config.id.length > 1) {
 							poolList.push({ name: pooly.name, value: pooly });
 						}
 					}
@@ -630,6 +628,7 @@ async function startMiner(minerData, algo, pool, region, advancedCommands) {
 	}
 	if(minerData.miner == "GMiner") {
 		pool.algos[algo].host = pool.algos[algo].host.replace("stratum+tcp://", "");
+		pool.algos[algo].host = pool.algos[algo].host.replace("ethproxy+ssl://", "");
 	}
 	if(pool.name == "Prohashing") {
 		if(minerData.parameters.wallet == "PHOENIX") {
@@ -656,6 +655,9 @@ async function startMiner(minerData, algo, pool, region, advancedCommands) {
 		}
 	} else {
 	defaultArgs.pass = ""
+	if(pool.name == "Ethermine" && minerData.miner == "GMiner"){
+		pool.algos[algo].port = "4444"//gminer being annoything
+	}
 	if (minerData.parameters.wallet != "") { // poo
 		if(minerData.parameters.wallet == "PHOENIX") {
 			if(algo == "ethash") {
