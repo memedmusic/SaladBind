@@ -39,10 +39,12 @@
         "regions": ["asia1", "eu1", "us1"],
         "algos": {
             "etchash": {
-                "host": "ethproxy+ssl://REGION-etc.ethermine.org:5555"
+                "host": "ethproxy+ssl://REGION-etc.ethermine.org",
+                "port": "5555"
             },
             "ethash": {
-                "host": "ethproxy+ssl://REGION.ethermine.org:5555"
+                "host": "ethproxy+ssl://REGION.ethermine.org",
+                "port": "5555"
             }
         }
     },
@@ -51,16 +53,20 @@
         "regions": ["europe", "us"],
         "algos": {
             "ethash": {
-                "host": "stratum+tcp://REGIONprohashing.com:3339"
+                "host": "stratum+tcp://REGIONprohashing.com",
+                "port": "3339"
             },
             "etchash": {
-                "host": "stratum+tcp://REGIONprohashing.com:3357"
+                "host": "stratum+tcp://REGIONprohashing.com",
+                "port": "3357"
             },
             "EQUI144_5": {
-                "host": "stratum+tcp://REGIONprohashing.com:3345"
+                "host": "stratum+tcp://REGIONprohashing.com",
+                "port": "3345"
             },
             "randomx": {
-                "host": "stratum+tcp://REGIONprohashing.com:3359"
+                "host": "stratum+tcp://REGIONprohashing.com",
+                "port": "3359"
             }
         }
     }
