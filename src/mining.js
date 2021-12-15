@@ -629,8 +629,7 @@ async function startMiner(minerData, algo, pool, region, advancedCommands) {
 	if(minerData.miner == "GMiner") {
 		pool.algos[algo].host = pool.algos[algo].host.replace("stratum+tcp://", "");
 		pool.algos[algo].host = pool.algos[algo].host.replace("ethproxy+ssl://", "");
-		pool.algos[algo].host = pool.algos[algo].host.split(":")[0]
-		pool.algos[algo].host = `${pool.algos[algo].host} -n ${pool.algos[algo].host.split(":")[0]}`
+		pool.algos[algo].host = `${pool.algos[algo].host.split(":")[0]} -n ${pool.algos[algo].host.split(":")[1]}`
 	}
 	if(pool.name == "Prohashing") {
 		if(minerData.parameters.wallet == "PHOENIX") {
