@@ -131,7 +131,7 @@
         "GMiner": {
             "miner": "GMiner",
             "download": {
-                "win32": "https://github.com/develsoftware/GMinerRelease/releases/download/2.74/gminer_2_74_windows64.zip",
+                "win32": "https://github.com/develsoftware/GMinerRelease/releases/download/2.75/gminer_2_75_windows64.zip",
                 "linux": "https://github.com/develsoftware/GMinerRelease/releases/download/2.74/gminer_2_74_linux64.tar.xz"
             },
             "algos": [
