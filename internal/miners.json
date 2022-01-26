@@ -127,7 +127,8 @@
                 "pool": "-o",
                 "pass": "-p"
             }
-        },  "GMiner": {
+        },  
+        "GMiner": {
             "miner": "GMiner",
             "download": {
                 "win32": "https://github.com/develsoftware/GMinerRelease/releases/download/2.74/gminer_2_74_windows64.zip",
